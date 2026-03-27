@@ -3,718 +3,263 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Share Structure Calculator</title>
+<title>ShareBiz Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --primary: #1a3a5c;
-    --primary-light: #2c5f8a;
-    --accent: #e8a838;
-    --bg: #f4f6f9;
-    --card: #ffffff;
-    --border: #d1d9e6;
-    --text: #2c3e50;
-    --text-light: #6c7a89;
-    --success: #27ae60;
-    --danger: #e74c3c;
-    --info: #3498db;
+    --blue: #1565C0; --blue-dark: #0D47A1; --blue-light: #E3F2FD;
+    --gold: #FFA500; --gold-lt: #FFD54F;
+    --ink: #0D1B2A; --muted: #546E7A; --bg: #F0F4F8;
+    --card: #fff; --border: #BBDEFB;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+  body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
 
   .header {
-    background: linear-gradient(135deg, var(--primary), var(--primary-light));
-    color: #fff; padding: 24px 32px; display: flex; align-items: center; gap: 16px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    background: linear-gradient(135deg, var(--blue-dark), var(--blue));
+    padding: 40px 32px 48px; text-align: center; position: relative; overflow: hidden;
   }
-  .header svg { width: 40px; height: 40px; flex-shrink: 0; }
-  .header h1 { font-size: 22px; font-weight: 600; }
-  .header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
+  .header::before {
+    content: ''; position: absolute; top: -60px; right: -60px;
+    width: 250px; height: 250px; border-radius: 50%;
+    background: rgba(255,165,0,0.08);
+  }
+  .header::after {
+    content: ''; position: absolute; bottom: -40px; left: -40px;
+    width: 180px; height: 180px; border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  .logo { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 12px; }
+  .logo-icon {
+    width: 56px; height: 56px; border-radius: 14px;
+    background: rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center; font-size: 28px;
+  }
+  .logo-text h1 { font-family: 'Nunito', sans-serif; font-weight: 900; font-size: 28px; color: #fff; }
+  .logo-text h1 span { color: var(--gold-lt); }
+  .logo-text p { font-size: 13px; color: rgba(255,255,255,0.6); letter-spacing: 0.5px; }
+  .header-sub { color: rgba(255,255,255,0.8); font-size: 15px; margin-top: 8px; position: relative; z-index: 1; }
 
-  .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
-
-  .card {
-    background: var(--card); border-radius: 10px; padding: 24px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-bottom: 20px;
-    border: 1px solid var(--border);
+  .search-bar {
+    max-width: 480px; margin: -24px auto 0; position: relative; z-index: 10;
   }
-  .card-title {
-    font-size: 16px; font-weight: 600; color: var(--primary);
-    margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
-    padding-bottom: 10px; border-bottom: 2px solid var(--accent);
+  .search-bar input {
+    width: 100%; padding: 14px 20px 14px 48px; border: 2px solid var(--border);
+    border-radius: 14px; font-size: 15px; font-family: 'Poppins', sans-serif;
+    background: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    outline: none; transition: border-color 0.2s;
   }
-  .card-title .step {
-    background: var(--accent); color: #fff; width: 26px; height: 26px;
-    border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 700; flex-shrink: 0;
+  .search-bar input:focus { border-color: var(--blue); }
+  .search-bar .search-icon {
+    position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
+    font-size: 18px; color: var(--muted);
   }
 
-  label { display: block; font-size: 12px; font-weight: 600; color: var(--text-light); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-  input, select {
-    width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 6px;
-    font-size: 14px; background: #fff; transition: border-color 0.2s;
-  }
-  input:focus, select:focus { outline: none; border-color: var(--info); box-shadow: 0 0 0 3px rgba(52,152,219,0.15); }
-  .form-group { margin-bottom: 14px; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 36px 24px 60px; }
 
-  .btn {
-    padding: 9px 18px; border: none; border-radius: 6px; font-size: 13px;
-    font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex;
-    align-items: center; gap: 6px;
+  .category {
+    font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 18px;
+    color: var(--blue-dark); margin-bottom: 16px; margin-top: 12px;
+    display: flex; align-items: center; gap: 8px;
   }
-  .btn-primary { background: var(--primary); color: #fff; }
-  .btn-primary:hover { background: var(--primary-light); }
-  .btn-success { background: var(--success); color: #fff; }
-  .btn-success:hover { background: #219a52; }
-  .btn-danger { background: var(--danger); color: #fff; }
-  .btn-danger:hover { background: #c0392b; }
-  .btn-accent { background: var(--accent); color: #fff; }
-  .btn-accent:hover { background: #d4952e; }
-  .btn-sm { padding: 5px 10px; font-size: 12px; }
-
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th { background: var(--primary); color: #fff; padding: 10px 12px; text-align: left; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
-  td { padding: 9px 12px; border-bottom: 1px solid #eef1f5; }
-  tr:hover td { background: #f8fafc; }
-  tr.total-row td { font-weight: 700; background: #eef3f8; border-top: 2px solid var(--primary); }
-  .text-right { text-align: right; }
-
-  .shareholder-row, .investor-row { display: flex; gap: 10px; align-items: flex-end; margin-bottom: 10px; flex-wrap: wrap; }
-  .shareholder-row .form-group, .investor-row .form-group { flex: 1; min-width: 110px; margin-bottom: 0; }
-  .shareholder-row .form-group:first-child, .investor-row .form-group:first-child { flex: 2; min-width: 170px; }
-
-  .tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
-  .tag-blue { background: #e8f0fe; color: #1a73e8; }
-  .tag-green { background: #e6f4ea; color: #1e8e3e; }
-  .tag-orange { background: #fef7e0; color: #e37400; }
-
-  .allotment-header {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 10px 14px; border-radius: 8px; margin-bottom: 12px;
-    font-weight: 600; font-size: 14px;
+  .category .cat-icon { font-size: 20px; }
+  .category .count {
+    background: var(--blue-light); color: var(--blue); font-size: 12px;
+    padding: 2px 10px; border-radius: 10px; font-weight: 600;
   }
-  .allotment-1 { background: #e8f0fe; color: #1a73e8; }
-  .allotment-2 { background: #fef7e0; color: #e37400; }
-  .allotment-final { background: #e6f4ea; color: #1e8e3e; }
 
-  .notes-box {
-    background: #fdf6e3; border-left: 4px solid var(--accent);
-    padding: 14px 18px; border-radius: 0 8px 8px 0; font-size: 13px; line-height: 1.7;
+  .tool-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 18px; margin-bottom: 32px;
   }
-  .notes-box strong { color: var(--primary); }
 
-  .summary-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 12px; margin-bottom: 16px;
+  .tool-card {
+    background: var(--card); border-radius: 14px; padding: 24px;
+    border: 1px solid var(--border); cursor: pointer;
+    transition: all 0.25s ease; position: relative; overflow: hidden;
+    text-decoration: none; color: inherit; display: block;
   }
-  .summary-item {
-    background: #f8fafc; border-radius: 8px; padding: 14px; text-align: center;
-    border: 1px solid #e8ecf1;
+  .tool-card:hover {
+    transform: translateY(-4px); box-shadow: 0 8px 30px rgba(13,71,161,0.12);
+    border-color: var(--blue);
   }
-  .summary-item .val { font-size: 22px; font-weight: 700; color: var(--primary); }
-  .summary-item .lbl { font-size: 11px; color: var(--text-light); text-transform: uppercase; margin-top: 4px; }
+  .tool-card:hover .card-arrow { opacity: 1; transform: translateX(0); }
 
-  /* Valuation card */
-  .valuation-card {
-    background: linear-gradient(135deg, #1a3a5c, #2c5f8a);
-    border-radius: 12px; padding: 28px 32px; margin-bottom: 20px;
-    color: #fff; position: relative; overflow: hidden;
-    display: flex; align-items: center; justify-content: center; flex-direction: column;
+  .card-top { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 12px; }
+  .card-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; flex-shrink: 0;
   }
-  .valuation-card::before {
-    content: ''; position: absolute; top: -30px; right: -30px;
-    width: 120px; height: 120px; border-radius: 50%;
-    background: rgba(232,168,56,0.15);
+  .card-info { flex: 1; }
+  .card-info h3 { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 16px; line-height: 1.3; }
+  .card-info .card-tag {
+    display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px;
+    border-radius: 6px; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px;
   }
-  .val-label { font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.75; margin-bottom: 8px; }
-  .val-amount { font-size: 36px; font-weight: 700; position: relative; z-index: 1; }
-  .val-detail { font-size: 13px; opacity: 0.7; margin-top: 6px; }
+  .card-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .card-arrow {
+    position: absolute; right: 20px; top: 50%; transform: translateX(-8px) translateY(-50%);
+    font-size: 20px; color: var(--blue); opacity: 0; transition: all 0.25s;
+  }
 
-  .dilution-toggle {
-    display: flex; background: #e8ecf1; border-radius: 8px; overflow: hidden; margin-bottom: 4px;
-  }
-  .dilution-toggle button {
-    flex: 1; padding: 8px 14px; border: none; background: transparent;
-    font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text-light); transition: all 0.2s;
-  }
-  .dilution-toggle button.active { background: var(--primary); color: #fff; }
+  .theme-blue .card-icon { background: #E3F2FD; color: #1565C0; }
+  .theme-blue .card-tag { background: #E3F2FD; color: #1565C0; }
+  .theme-green .card-icon { background: #E8F5E9; color: #2E7D32; }
+  .theme-green .card-tag { background: #E8F5E9; color: #2E7D32; }
+  .theme-orange .card-icon { background: #FFF3E0; color: #E65100; }
+  .theme-orange .card-tag { background: #FFF3E0; color: #E65100; }
+  .theme-purple .card-icon { background: #F3E5F5; color: #7B1FA2; }
+  .theme-purple .card-tag { background: #F3E5F5; color: #7B1FA2; }
+  .theme-red .card-icon { background: #FFEBEE; color: #C62828; }
+  .theme-red .card-tag { background: #FFEBEE; color: #C62828; }
+  .theme-teal .card-icon { background: #E0F2F1; color: #00695C; }
+  .theme-teal .card-tag { background: #E0F2F1; color: #00695C; }
 
-  #results { display: none; }
-  .action-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
-  .error-msg { color: var(--danger); font-size: 12px; margin-top: 4px; font-weight: 500; }
-  .help-text { font-size: 11px; color: var(--text-light); margin-top: 3px; }
+  .no-results { text-align: center; padding: 48px; color: var(--muted); display: none; }
+  .no-results .nr-icon { font-size: 48px; margin-bottom: 12px; }
+
+  .footer { text-align: center; padding: 20px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--border); }
+
+  @media (max-width: 640px) {
+    .header { padding: 28px 20px 40px; }
+    .logo-text h1 { font-size: 22px; }
+    .tool-grid { grid-template-columns: 1fr; }
+    .container { padding: 28px 16px 40px; }
+  }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <svg viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="rgba(255,255,255,0.15)"/><path d="M20 8L30 14V26L20 32L10 26V14L20 8Z" stroke="#fff" stroke-width="2" fill="none"/><circle cx="20" cy="18" r="3" fill="#e8a838"/><path d="M14 26c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke="#fff" stroke-width="1.5" fill="none"/></svg>
-  <div>
-    <h1>Share Structure Calculator</h1>
-    <p>Cap Table & Allotment Proposal Generator</p>
+  <div class="logo">
+    <div class="logo-icon">&#9874;</div>
+    <div class="logo-text">
+      <h1>Share<span>Biz</span> Tools</h1>
+      <p>BUSINESS TOOLKIT</p>
+    </div>
   </div>
+  <div class="header-sub">Select a tool to get started</div>
+</div>
+
+<div class="search-bar">
+  <span class="search-icon">&#128269;</span>
+  <input type="text" id="search" placeholder="Search tools..." oninput="filterTools()">
 </div>
 
 <div class="container">
-  <!-- STEP 1 -->
-  <div class="card no-print">
-    <div class="card-title"><span class="step">1</span> Current Share Structure</div>
-    <div style="margin-bottom:10px;">
-      <label>COMPANY NAME</label>
-      <input type="text" id="company-name" placeholder="e.g. Mega Arms Manufacturing (B) Sdn. Bhd." style="max-width:500px;">
-    </div>
-    <div id="shareholders-list"></div>
-    <button class="btn btn-primary btn-sm" onclick="addShareholder()" style="margin-top:6px;">+ Add Shareholder</button>
-  </div>
 
-  <!-- STEP 2 -->
-  <div class="card no-print">
-    <div class="card-title"><span class="step">2</span> New Investors</div>
-    <div style="margin-bottom: 14px;">
-      <label>DILUTION METHOD</label>
-      <div class="dilution-toggle">
-        <button id="btn-post" class="active" onclick="setDilution('post')">Post-Dilution %</button>
-        <button id="btn-pre" onclick="setDilution('pre')">Pre-Dilution %</button>
+  <!-- ===== FINANCE & CORPORATE ===== -->
+  <div class="category" id="cat-finance">
+    <span class="cat-icon">&#128176;</span> Finance & Corporate
+    <span class="count" id="count-finance"></span>
+  </div>
+  <div class="tool-grid" id="grid-finance">
+
+    <a href="share-calculator.html" class="tool-card theme-blue" data-name="Share Structure Calculator">
+      <div class="card-top">
+        <div class="card-icon">&#128200;</div>
+        <div class="card-info">
+          <h3>Share Structure Calculator</h3>
+          <span class="card-tag">Cap Table</span>
+        </div>
       </div>
-      <div class="help-text" id="dilution-help">Investor % is based on the <strong>final (post-allotment)</strong> total shares.</div>
-    </div>
-    <div id="investors-list"></div>
-    <button class="btn btn-primary btn-sm" onclick="addInvestor()" style="margin-top:6px;">+ Add Investor</button>
+      <div class="card-desc">Calculate share allotments, dilution, and generate investor proposals with post/pre-dilution support and PDF export.</div>
+      <div class="card-arrow">&#8594;</div>
+    </a>
+
   </div>
 
-  <!-- STEP 3 -->
-  <div class="card no-print">
-    <div class="card-title"><span class="step">3</span> Generate Proposal</div>
-    <div class="action-bar">
-      <button class="btn btn-success" onclick="calculate()">Calculate & Generate Proposal</button>
-      <button class="btn btn-accent" onclick="loadExample()">Load Mega Arms Example</button>
-      <button class="btn btn-primary" id="btn-pdf" onclick="exportPDF()" style="display:none;">Export PDF</button>
-      <button class="btn btn-danger" onclick="resetAll()">Reset All</button>
-    </div>
-    <div id="error-area"></div>
+  <!-- ===== HR & OPERATIONS ===== -->
+  <div class="category" id="cat-hr">
+    <span class="cat-icon">&#128101;</span> HR & Operations
+    <span class="count" id="count-hr"></span>
+  </div>
+  <div class="tool-grid" id="grid-hr">
+
+    <a href="staff-dashboard.html" class="tool-card theme-green" data-name="Solepro Staff Dashboard">
+      <div class="card-top">
+        <div class="card-icon">&#128203;</div>
+        <div class="card-info">
+          <h3>Solepro Staff Dashboard</h3>
+          <span class="card-tag">Staff Management</span>
+        </div>
+      </div>
+      <div class="card-desc">Manage staff records, generate payslips, track attendance, and handle HR operations for Solepro team.</div>
+      <div class="card-arrow">&#8594;</div>
+    </a>
+
   </div>
 
-  <!-- RESULTS -->
-  <div id="results">
-    <div class="card">
-      <div class="card-title">Summary</div>
-      <div class="summary-grid" id="summary-grid"></div>
-    </div>
+  <!--
+  =============================================
+  HOW TO ADD A NEW TOOL:
+  =============================================
 
-    <!-- Valuation -->
-    <div class="valuation-card" id="valuation-section"></div>
+  1. Upload your new .html tool file to the GitHub repo
 
-    <!-- Before -->
-    <div class="card">
-      <div class="allotment-header allotment-1">Current Structure (Before)</div>
-      <table id="table-before">
-        <thead><tr><th>Shareholder</th><th class="text-right">Shares (Units)</th><th class="text-right">Amount (RM)</th><th class="text-right">Equity %</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
+  2. Copy a <a> tool-card block from above
 
-    <!-- Allotment Rounds -->
-    <div id="allotment-rounds"></div>
+  3. Paste it inside the correct grid (grid-finance, grid-hr)
+     or create a new category section
 
-    <!-- Final Structure -->
-    <div class="card">
-      <div class="allotment-header allotment-final">Final Share Structure</div>
-      <table id="table-final">
-        <thead><tr><th>Shareholder</th><th class="text-right">Total Shares</th><th class="text-right">Equity %</th><th class="text-right">Amount (RM)</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
+  4. Update: href, data-name, icon, h3, card-tag, card-desc
 
-    <!-- Notes -->
-    <div class="card">
-      <div class="card-title">Notes & Key Assumptions</div>
-      <div class="notes-box" id="notes-box"></div>
-    </div>
+  5. Theme colors: theme-blue, theme-green, theme-orange,
+     theme-purple, theme-red, theme-teal
+
+  6. Commit & push. Done!
+  =============================================
+  -->
+
+  <div class="no-results" id="no-results">
+    <div class="nr-icon">&#128270;</div>
+    <p>No tools match your search.</p>
   </div>
+
 </div>
 
-<!-- jsPDF -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<div class="footer">
+  &copy; 2026 ShareBiz Tools &mdash; All tools run locally in your browser.
+</div>
 
 <script>
-let dilutionMode = 'post';
-let shareholderCounter = 0;
-let investorCounter = 0;
-let lastCalcData = null;
-
-function setDilution(mode) {
-  dilutionMode = mode;
-  document.getElementById('btn-post').classList.toggle('active', mode === 'post');
-  document.getElementById('btn-pre').classList.toggle('active', mode === 'pre');
-  document.getElementById('dilution-help').innerHTML = mode === 'post'
-    ? 'Investor % is based on the <strong>final (post-allotment)</strong> total shares.'
-    : 'Investor % is based on the <strong>current (pre-allotment)</strong> total shares. New shares = % × existing units.';
+function updateCounts() {
+  document.querySelectorAll('.tool-grid').forEach(grid => {
+    const cat = grid.id.replace('grid-', '');
+    const visible = grid.querySelectorAll('.tool-card:not([style*="display: none"])').length;
+    const el = document.getElementById('count-' + cat);
+    if (el) el.textContent = visible + ' tool' + (visible !== 1 ? 's' : '');
+  });
 }
 
-function addShareholder(name='', units='', amount='') {
-  shareholderCounter++;
-  const id = 'sh-' + shareholderCounter;
-  const div = document.createElement('div');
-  div.className = 'shareholder-row'; div.id = id;
-  div.innerHTML = `
-    <div class="form-group"><label>Shareholder Name</label><input type="text" class="sh-name" value="${name}" placeholder="e.g. Mega Arms Holdings Sdn. Bhd."></div>
-    <div class="form-group"><label>Shares (Units)</label><input type="number" class="sh-units" value="${units}" min="0" placeholder="100"></div>
-    <div class="form-group"><label>Amount (RM)</label><input type="number" class="sh-amount" value="${amount}" min="0" step="0.01" placeholder="100"></div>
-    <button class="btn btn-danger btn-sm" onclick="document.getElementById('${id}').remove()" style="margin-bottom:1px;">✕</button>`;
-  document.getElementById('shareholders-list').appendChild(div);
+function filterTools() {
+  const q = document.getElementById('search').value.toLowerCase().trim();
+  const cards = document.querySelectorAll('.tool-card');
+  let anyVisible = false;
+
+  cards.forEach(card => {
+    const name = card.dataset.name.toLowerCase();
+    const desc = card.querySelector('.card-desc').textContent.toLowerCase();
+    const tag = card.querySelector('.card-tag').textContent.toLowerCase();
+    const match = !q || name.includes(q) || desc.includes(q) || tag.includes(q);
+    card.style.display = match ? '' : 'none';
+    if (match) anyVisible = true;
+  });
+
+  document.querySelectorAll('.tool-grid').forEach(grid => {
+    const cat = grid.id.replace('grid-', '');
+    const hasVisible = grid.querySelectorAll('.tool-card:not([style*="display: none"])').length > 0;
+    document.getElementById('cat-' + cat).style.display = hasVisible ? '' : 'none';
+    grid.style.display = hasVisible ? '' : 'none';
+  });
+
+  document.getElementById('no-results').style.display = anyVisible ? 'none' : 'block';
+  updateCounts();
 }
 
-function addInvestor(name='', amount='', pct='') {
-  investorCounter++;
-  const id = 'inv-' + investorCounter;
-  const div = document.createElement('div');
-  div.className = 'investor-row'; div.id = id;
-  div.innerHTML = `
-    <div class="form-group"><label>Investor Name</label><input type="text" class="inv-name" value="${name}" placeholder="e.g. Alfred Ling"></div>
-    <div class="form-group"><label>Investment (RM)</label><input type="number" class="inv-amount" value="${amount}" min="0" step="0.01" placeholder="1000000"></div>
-    <div class="form-group"><label>Requested %</label><input type="number" class="inv-pct" value="${pct}" min="0.01" max="99" step="0.01" placeholder="8"></div>
-    <button class="btn btn-danger btn-sm" onclick="document.getElementById('${id}').remove()" style="margin-bottom:1px;">✕</button>`;
-  document.getElementById('investors-list').appendChild(div);
-}
-
-function getShareholders() {
-  const rows = document.querySelectorAll('.shareholder-row');
-  const data = [];
-  rows.forEach(r => {
-    const name = r.querySelector('.sh-name').value.trim();
-    const units = parseFloat(r.querySelector('.sh-units').value) || 0;
-    const amount = parseFloat(r.querySelector('.sh-amount').value) || 0;
-    if (name) data.push({ name, units, amount });
-  });
-  return data;
-}
-
-function getInvestors() {
-  const rows = document.querySelectorAll('.investor-row');
-  const data = [];
-  rows.forEach(r => {
-    const name = r.querySelector('.inv-name').value.trim();
-    const amount = parseFloat(r.querySelector('.inv-amount').value) || 0;
-    const pct = parseFloat(r.querySelector('.inv-pct').value) || 0;
-    if (name && amount > 0 && pct > 0) data.push({ name, amount, pct: pct / 100 });
-  });
-  return data;
-}
-
-function fmt(n) { return n.toLocaleString('en-MY', { minimumFractionDigits: 0, maximumFractionDigits: 0 }); }
-function fmtDec(n) { return n.toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
-function fmtPct(n) { return (n * 100).toFixed(2) + '%'; }
-function fmtRM(n) { return 'RM ' + fmtDec(n); }
-function ordinal(n) { const s=['th','st','nd','rd']; const v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); }
-
-function calculate() {
-  const errArea = document.getElementById('error-area');
-  errArea.innerHTML = '';
-
-  const shareholders = getShareholders();
-  const investors = getInvestors();
-  const companyName = document.getElementById('company-name').value.trim() || 'Company';
-
-  if (shareholders.length === 0) { errArea.innerHTML = '<div class="error-msg">Please add at least one existing shareholder.</div>'; return; }
-  if (investors.length === 0) { errArea.innerHTML = '<div class="error-msg">Please add at least one new investor.</div>'; return; }
-
-  const currentUnits = shareholders.reduce((s, h) => s + h.units, 0);
-  const currentAmount = shareholders.reduce((s, h) => s + h.amount, 0);
-  const parValue = currentAmount / currentUnits;
-
-  // ========================================================
-  // CORE LOGIC
-  // ========================================================
-  let investorResults = [];
-
-  if (dilutionMode === 'post') {
-    // POST-DILUTION: investor wants X% of FINAL total shares
-    // Total T = currentUnits / (1 - sum_of_investor_pcts)
-    // Investor shares = pct * T (new shares allotted)
-    // Existing shareholders keep their original units — NO top-up
-    const totalInvPct = investors.reduce((s, inv) => s + inv.pct, 0);
-    if (totalInvPct >= 1) {
-      errArea.innerHTML = '<div class="error-msg">Total investor percentage cannot be 100% or more.</div>';
-      return;
-    }
-    const totalShares = currentUnits / (1 - totalInvPct);
-
-    investorResults = investors.map(inv => {
-      const shares = Math.round(inv.pct * totalShares);
-      const pricePerShare = inv.amount / shares;
-      return { name: inv.name, shares, amount: inv.amount, postPct: inv.pct, pricePerShare };
-    });
-
-  } else {
-    // PRE-DILUTION: investor wants X% of CURRENT existing units
-    // New shares = pct * currentUnits (directly allotted)
-    // Post-dilution % = new_shares / (currentUnits + all_new_shares)
-    investorResults = investors.map(inv => {
-      const shares = Math.round(inv.pct * currentUnits);
-      const pricePerShare = inv.amount / shares;
-      return { name: inv.name, shares, amount: inv.amount, prePct: inv.pct, pricePerShare };
-    });
-  }
-
-  const totalNewShares = investorResults.reduce((s, r) => s + r.shares, 0);
-  const totalShares = currentUnits + totalNewShares;
-
-  // Compute post-dilution % for all
-  investorResults.forEach(inv => {
-    inv.postPct = inv.shares / totalShares;
-  });
-
-  const totalInvestorPct = investorResults.reduce((s, r) => s + r.postPct, 0);
-
-  // Group investors by similar price/share (same round if within 1% tolerance)
-  const rounds = [];
-  const assigned = new Set();
-  for (let i = 0; i < investorResults.length; i++) {
-    if (assigned.has(i)) continue;
-    const group = [i];
-    assigned.add(i);
-    for (let j = i + 1; j < investorResults.length; j++) {
-      if (assigned.has(j)) continue;
-      if (Math.abs(investorResults[i].pricePerShare - investorResults[j].pricePerShare) / investorResults[i].pricePerShare < 0.01) {
-        group.push(j);
-        assigned.add(j);
-      }
-    }
-    rounds.push(group);
-  }
-
-  // Assign round index
-  rounds.forEach((group, ri) => { group.forEach(idx => { investorResults[idx].roundIdx = ri; }); });
-
-  // Shareholder results (unchanged units, no top-up)
-  const shareholderResults = shareholders.map(sh => ({
-    name: sh.name,
-    originalUnits: sh.units,
-    originalAmount: sh.amount,
-    totalShares: sh.units,
-    totalAmount: sh.amount,
-    postPct: sh.units / totalShares
-  }));
-
-  // Implied valuation (use first round's price as representative)
-  const mainPrice = investorResults[0].pricePerShare;
-  const impliedValuation = totalShares * mainPrice;
-
-  // Store for PDF
-  lastCalcData = { companyName, shareholders, investors, shareholderResults, investorResults, rounds, totalShares, totalInvestorPct, currentUnits, currentAmount, parValue, impliedValuation, mainPrice };
-
-  // ========================================================
-  // RENDER
-  // ========================================================
-  document.getElementById('results').style.display = 'block';
-  document.getElementById('btn-pdf').style.display = 'inline-flex';
-
-  // Summary
-  document.getElementById('summary-grid').innerHTML = `
-    <div class="summary-item"><div class="val">${fmt(totalShares)}</div><div class="lbl">Total Shares</div></div>
-    <div class="summary-item"><div class="val">${rounds.length}</div><div class="lbl">Allotment Round${rounds.length > 1 ? 's' : ''}</div></div>
-    <div class="summary-item"><div class="val">${fmtRM(investorResults.reduce((s,r)=>s+r.amount,0))}</div><div class="lbl">Total Fundraise</div></div>
-    <div class="summary-item"><div class="val">${fmtPct(totalInvestorPct)}</div><div class="lbl">Total Dilution</div></div>`;
-
-  // Valuation
-  document.getElementById('valuation-section').innerHTML = `
-    <div class="val-label">Implied Valuation (Post-Money)</div>
-    <div class="val-amount">${fmtRM(impliedValuation)}</div>
-    <div class="val-detail">${fmt(totalShares)} shares × ${fmtRM(mainPrice)}/share</div>`;
-
-  // Before table
-  const tbBefore = document.querySelector('#table-before tbody');
-  tbBefore.innerHTML = '';
-  shareholders.forEach(sh => {
-    tbBefore.innerHTML += `<tr><td>${sh.name}</td><td class="text-right">${fmt(sh.units)}</td><td class="text-right">${fmtRM(sh.amount)}</td><td class="text-right">${fmtPct(sh.units/currentUnits)}</td></tr>`;
-  });
-  tbBefore.innerHTML += `<tr class="total-row"><td>TOTAL</td><td class="text-right">${fmt(currentUnits)}</td><td class="text-right">${fmtRM(currentAmount)}</td><td class="text-right">100.00%</td></tr>`;
-
-  // Allotment rounds (investor only — no top-up round)
-  const roundsDiv = document.getElementById('allotment-rounds');
-  roundsDiv.innerHTML = '';
-  rounds.forEach((group, ri) => {
-    const roundInvestors = group.map(idx => investorResults[idx]);
-    const price = roundInvestors[0].pricePerShare;
-    const roundLabel = rounds.length > 1 ? `${ordinal(ri+1)} Allotment` : 'New Share Allotment';
-
-    let html = `<div class="card">
-      <div class="allotment-header allotment-2">
-        <span>${roundLabel} — Investor Subscription</span>
-        <span class="tag tag-orange">@ ${fmtRM(price)}/share</span>
-      </div>
-      <table><thead><tr><th>Investor</th><th class="text-right">New Shares</th><th class="text-right">Investment (RM)</th><th class="text-right">Price/Share</th></tr></thead><tbody>`;
-    let totSh = 0, totAmt = 0;
-    roundInvestors.forEach(inv => {
-      html += `<tr><td>${inv.name}</td><td class="text-right">${fmt(inv.shares)}</td><td class="text-right">${fmtRM(inv.amount)}</td><td class="text-right">${fmtRM(inv.pricePerShare)}</td></tr>`;
-      totSh += inv.shares; totAmt += inv.amount;
-    });
-    html += `<tr class="total-row"><td>TOTAL</td><td class="text-right">${fmt(totSh)}</td><td class="text-right">${fmtRM(totAmt)}</td><td class="text-right">—</td></tr>`;
-    html += `</tbody></table></div>`;
-    roundsDiv.innerHTML += html;
-  });
-
-  // Final structure
-  const tbFinal = document.querySelector('#table-final tbody');
-  tbFinal.innerHTML = '';
-  let grandShares = 0, grandAmt = 0;
-  shareholderResults.forEach(s => {
-    tbFinal.innerHTML += `<tr><td>${s.name} <span class="tag tag-blue">Existing</span></td><td class="text-right">${fmt(s.totalShares)}</td><td class="text-right">${fmtPct(s.postPct)}</td><td class="text-right">${fmtRM(s.totalAmount)}</td></tr>`;
-    grandShares += s.totalShares; grandAmt += s.totalAmount;
-  });
-  investorResults.forEach(inv => {
-    tbFinal.innerHTML += `<tr><td>${inv.name} <span class="tag tag-green">Investor</span></td><td class="text-right">${fmt(inv.shares)}</td><td class="text-right">${fmtPct(inv.postPct)}</td><td class="text-right">${fmtRM(inv.amount)}</td></tr>`;
-    grandShares += inv.shares; grandAmt += inv.amount;
-  });
-  tbFinal.innerHTML += `<tr class="total-row"><td>TOTAL</td><td class="text-right">${fmt(grandShares)}</td><td class="text-right">100.00%</td><td class="text-right">${fmtRM(grandAmt)}</td></tr>`;
-
-  // Notes
-  let notes = '';
-  rounds.forEach((group, ri) => {
-    const roundInvestors = group.map(idx => investorResults[idx]);
-    const price = roundInvestors[0].pricePerShare;
-    const premium = price - parValue;
-    const roundLabel = rounds.length > 1 ? `${ordinal(ri+1)} Allotment` : 'Allotment';
-    notes += `<strong>${roundLabel}:</strong> New investors subscribe shares @ ${fmtRM(price)}/share.`;
-    if (premium > 0) notes += ` Share premium of ${fmtRM(premium)}/share is credited to the Share Premium Account.`;
-    notes += `<br>`;
-  });
-  notes += `<strong>Total Shares:</strong> Final paid-up share capital: ${fmt(totalShares)} ordinary shares.`;
-  document.getElementById('notes-box').innerHTML = notes;
-
-  document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
-}
-
-// ============ PDF EXPORT ============
-function exportPDF() {
-  if (!lastCalcData) { alert('Please calculate first.'); return; }
-
-  const d = lastCalcData;
-
-  if (typeof window.jspdf === 'undefined') {
-    alert('PDF library is still loading. Please wait a moment and try again.');
-    return;
-  }
-
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-  const pageW = doc.internal.pageSize.getWidth();
-  const pageH = doc.internal.pageSize.getHeight();
-  const margin = 10;
-  const availW = pageW - 2 * margin;
-
-  const navy = [26, 58, 92];
-  const white = [255, 255, 255];
-  const lightBlue = [220, 232, 245];
-  const lightGold = [254, 247, 224];
-  const lightGreen = [220, 240, 225];
-  const gray = [100, 110, 120];
-
-  // Title bar
-  doc.setFillColor(...navy);
-  doc.rect(0, 0, pageW, 16, 'F');
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(12);
-  doc.setTextColor(...white);
-  doc.text(d.companyName + '  |  Share Structure Proposal', margin, 11);
-
-  let y = 22;
-
-  // ===== Build the wide table matching Excel format =====
-  // Columns: Shareholder | BEFORE (Shares, Amount) | per round (New Shares, Amount, Price/Share) | FINAL (Total, Equity%, Amount)
-
-  // Header row 1 (group headers)
-  const hdr1 = [
-    { content: '', styles: { fillColor: white, textColor: [0,0,0] } },
-    { content: 'BEFORE\n(Current Structure)', colSpan: 2, styles: { halign: 'center', fillColor: lightBlue, textColor: navy, fontStyle: 'bold', fontSize: 7 } },
-  ];
-  d.rounds.forEach((group, ri) => {
-    const price = d.investorResults[group[0]].pricePerShare;
-    const label = d.rounds.length > 1 ? `${ordinal(ri+1).toUpperCase()} ALLOTMENT` : 'ALLOTMENT';
-    hdr1.push({ content: `${label}\n(Investor @ RM${fmtDec(price)}/share)`, colSpan: 3, styles: { halign: 'center', fillColor: lightGold, textColor: [180,120,0], fontStyle: 'bold', fontSize: 7 } });
-  });
-  hdr1.push({ content: 'FINAL STRUCTURE', colSpan: 3, styles: { halign: 'center', fillColor: lightGreen, textColor: [30,100,50], fontStyle: 'bold', fontSize: 7 } });
-
-  // Header row 2 (column names)
-  const hStyle = { halign: 'right', fillColor: navy, textColor: white, fontStyle: 'bold', fontSize: 7 };
-  const hdr2 = [
-    { content: 'Shareholder', styles: { ...hStyle, halign: 'left' } },
-    { content: 'Shares', styles: hStyle },
-    { content: 'Amount (RM)', styles: hStyle },
-  ];
-  d.rounds.forEach(() => {
-    hdr2.push({ content: 'New Shares', styles: hStyle });
-    hdr2.push({ content: 'Amount (RM)', styles: hStyle });
-    hdr2.push({ content: 'Price/Share', styles: hStyle });
-  });
-  hdr2.push({ content: 'Total Shares', styles: hStyle });
-  hdr2.push({ content: 'Equity %', styles: hStyle });
-  hdr2.push({ content: 'Amount (RM)', styles: hStyle });
-
-  // Data rows
-  const dash = { content: '-', styles: { halign: 'right', textColor: [180,180,180] } };
-  const bodyRows = [];
-
-  // Existing shareholders
-  d.shareholderResults.forEach(s => {
-    const row = [
-      s.name,
-      { content: fmt(s.originalUnits), styles: { halign: 'right' } },
-      { content: fmtDec(s.originalAmount), styles: { halign: 'right' } },
-    ];
-    d.rounds.forEach(() => { row.push({...dash}, {...dash}, {...dash}); });
-    row.push({ content: fmt(s.totalShares), styles: { halign: 'right', fontStyle: 'bold' } });
-    row.push({ content: fmtPct(s.postPct), styles: { halign: 'right', fontStyle: 'bold' } });
-    row.push({ content: fmtDec(s.totalAmount), styles: { halign: 'right', fontStyle: 'bold' } });
-    bodyRows.push(row);
-  });
-
-  // Investors
-  d.investorResults.forEach(inv => {
-    const row = [
-      inv.name,
-      {...dash}, {...dash},
-    ];
-    d.rounds.forEach((group, ri) => {
-      if (inv.roundIdx === ri) {
-        row.push({ content: fmt(inv.shares), styles: { halign: 'right' } });
-        row.push({ content: fmtDec(inv.amount), styles: { halign: 'right' } });
-        row.push({ content: fmtDec(inv.pricePerShare), styles: { halign: 'right' } });
-      } else {
-        row.push({...dash}, {...dash}, {...dash});
-      }
-    });
-    row.push({ content: fmt(inv.shares), styles: { halign: 'right', fontStyle: 'bold' } });
-    row.push({ content: fmtPct(inv.postPct), styles: { halign: 'right', fontStyle: 'bold' } });
-    row.push({ content: fmtDec(inv.amount), styles: { halign: 'right', fontStyle: 'bold' } });
-    bodyRows.push(row);
-  });
-
-  // Total row
-  const totalRow = [
-    { content: 'TOTAL', styles: { fontStyle: 'bold' } },
-    { content: fmt(d.currentUnits), styles: { halign: 'right', fontStyle: 'bold' } },
-    { content: fmtDec(d.currentAmount), styles: { halign: 'right', fontStyle: 'bold' } },
-  ];
-  d.rounds.forEach(group => {
-    const invInRound = group.map(idx => d.investorResults[idx]);
-    totalRow.push({ content: fmt(invInRound.reduce((s,r) => s + r.shares, 0)), styles: { halign: 'right', fontStyle: 'bold' } });
-    totalRow.push({ content: fmtDec(invInRound.reduce((s,r) => s + r.amount, 0)), styles: { halign: 'right', fontStyle: 'bold' } });
-    totalRow.push({ content: '', styles: { halign: 'right' } });
-  });
-  const grandAmt = d.shareholderResults.reduce((s,r) => s + r.totalAmount, 0) + d.investorResults.reduce((s,r) => s + r.amount, 0);
-  totalRow.push({ content: fmt(d.totalShares), styles: { halign: 'right', fontStyle: 'bold' } });
-  totalRow.push({ content: '100.00%', styles: { halign: 'right', fontStyle: 'bold' } });
-  totalRow.push({ content: fmtDec(grandAmt), styles: { halign: 'right', fontStyle: 'bold' } });
-  bodyRows.push(totalRow);
-
-  // Column widths
-  const colCount = 3 + d.rounds.length * 3 + 3;
-  const nameW = 44;
-  const dataW = (availW - nameW) / (colCount - 1);
-  const colStyles = { 0: { cellWidth: nameW } };
-  for (let i = 1; i < colCount; i++) colStyles[i] = { cellWidth: dataW };
-
-  doc.autoTable({
-    startY: y,
-    head: [hdr1, hdr2],
-    body: bodyRows,
-    margin: { left: margin, right: margin },
-    styles: { fontSize: 7, cellPadding: 2, lineColor: [200, 200, 200], lineWidth: 0.2, font: 'helvetica' },
-    columnStyles: colStyles,
-    theme: 'grid',
-    didParseCell: function(data) {
-      if (data.row.index === bodyRows.length - 1 && data.section === 'body') {
-        data.cell.styles.fillColor = [230, 237, 245];
-      }
-      if (data.section === 'body' && data.row.index < bodyRows.length - 1 && data.row.index % 2 === 1) {
-        if (!data.cell.styles.fillColor) data.cell.styles.fillColor = [248, 250, 252];
-      }
-    }
-  });
-
-  y = doc.lastAutoTable.finalY + 8;
-
-  // Valuation box
-  doc.setFillColor(...navy);
-  const valBoxH = 18;
-  doc.roundedRect(margin, y, availW, valBoxH, 2, 2, 'F');
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8);
-  doc.setTextColor(200, 210, 220);
-  doc.text('IMPLIED VALUATION (POST-MONEY)', margin + 6, y + 7);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(14);
-  doc.setTextColor(...white);
-  doc.text(fmtRM(d.impliedValuation), margin + 6, y + 14);
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8);
-  doc.setTextColor(200, 210, 220);
-  doc.text(fmt(d.totalShares) + ' shares  ×  ' + fmtRM(d.mainPrice) + '/share', margin + 90, y + 14);
-
-  y += valBoxH + 8;
-
-  // Notes
-  if (y + 15 < pageH - 10) {
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
-    doc.setTextColor(...navy);
-    doc.text('Notes & Key Assumptions', margin, y);
-    y += 5;
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(7);
-    doc.setTextColor(...gray);
-
-    d.rounds.forEach((group, ri) => {
-      const price = d.investorResults[group[0]].pricePerShare;
-      const premium = price - d.parValue;
-      const label = d.rounds.length > 1 ? `${ordinal(ri+1)} Allotment` : 'Allotment';
-      let line = `${label}: New investors subscribe shares @ ${fmtRM(price)}/share.`;
-      if (premium > 0) line += ` Share premium of ${fmtRM(premium)}/share credited to Share Premium Account.`;
-      doc.text(line, margin, y);
-      y += 4;
-    });
-    doc.text('Total Shares: Final paid-up share capital: ' + fmt(d.totalShares) + ' ordinary shares.', margin, y);
-  }
-
-  // Footer
-  doc.setFontSize(6);
-  doc.setTextColor(180, 180, 180);
-  doc.text('Generated by Share Structure Calculator', pageW / 2, pageH - 5, { align: 'center' });
-
-  const safeName = d.companyName.replace(/[^a-zA-Z0-9]/g, '_').replace(/_+/g, '_');
-  doc.save(safeName + '_Share_Structure.pdf');
-}
-
-function loadExample() {
-  document.getElementById('shareholders-list').innerHTML = '';
-  document.getElementById('investors-list').innerHTML = '';
-  shareholderCounter = 0; investorCounter = 0;
-
-  document.getElementById('company-name').value = 'MEGA ARMS MANUFACTURING (B) SDN. BHD.';
-  addShareholder('Mega Arms Holdings Sdn. Bhd.', 100, 100);
-  addInvestor('Alfred Ling Lu Khing', 1000000, 8);
-  addInvestor('Yap Wei Bin', 125000, 1);
-  addInvestor('Lion Kai Sheng', 170000, 1.36);
-  addInvestor('Leong Kian Hou', 170000, 1.36);
-
-  setDilution('post');
-  calculate();
-}
-
-function resetAll() {
-  document.getElementById('shareholders-list').innerHTML = '';
-  document.getElementById('investors-list').innerHTML = '';
-  document.getElementById('results').style.display = 'none';
-  document.getElementById('btn-pdf').style.display = 'none';
-  document.getElementById('error-area').innerHTML = '';
-  document.getElementById('company-name').value = '';
-  shareholderCounter = 0; investorCounter = 0; lastCalcData = null;
-  addShareholder(); addInvestor();
-}
-
-addShareholder();
-addInvestor();
+updateCounts();
 </script>
+
 </body>
 </html>
